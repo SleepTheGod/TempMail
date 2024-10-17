@@ -1,19 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inbox - {{ email }}</title>
-</head>
-<body>
-    <h1>Inbox for {{ email }}</h1>
-    <h2>Messages:</h2>
+{% extends 'layout.html' %}
+
+{% block title %}Inbox{% endblock %}
+
+{% block content %}
+<h2>Inbox for {{ email }}</h2>
+{% if messages %}
+    <h3>Messages:</h3>
     <pre>{{ messages.messages }}</pre>
-    
-    <form method="POST" action="{{ url_for('send_message', email=email) }}">
-        <textarea name="message" placeholder="Write a message..."></textarea>
-        <button type="submit">Send Message</button>
-    </form>
-    <a href="{{ url_for('index') }}">Generate another email</a>
-</body>
-</html>
+{% else %}
+    <p>No messages found.</p>
+{% endif %}
+<form method="POST" action="{{ url_for('send_message', email=email) }}">
+    <textarea name="message" placeholder="Type your message here..." required></textarea>
+    <button type="submit">Send Message</button>
+</form>
+{% endblock %}
