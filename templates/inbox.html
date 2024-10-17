@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inbox - {{ email }}</title>
+</head>
+<body>
+    <h1>Inbox for {{ email }}</h1>
+    <h2>Messages:</h2>
+    <pre>{{ messages.messages }}</pre>
+    
+    <form method="POST" action="{{ url_for('send_message', email=email) }}">
+        <textarea name="message" placeholder="Write a message..."></textarea>
+        <button type="submit">Send Message</button>
+    </form>
+    <a href="{{ url_for('index') }}">Generate another email</a>
+</body>
+</html>
