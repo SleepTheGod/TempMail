@@ -1,15 +1,8 @@
 {% extends 'layout.html' %}
 
-{% block content %}
-<h1>Welcome to the Temporary Email Service</h1>
-<p>Generate a temporary email and receive verification emails!</p>
+{% block title %}Home{% endblock %}
 
-{% if current_user.is_authenticated %}
-    <p>You are logged in as <strong>{{ current_user.username }}</strong>.</p>
-    <a class="btn btn-primary" href="{{ url_for('user_dashboard') }}">Go to Your Dashboard</a>
-{% else %}
-    <p>Please register or log in to start generating temporary emails.</p>
-    <a class="btn btn-success" href="{{ url_for('register') }}">Register</a>
-    <a class="btn btn-info" href="{{ url_for('login') }}">Login</a>
-{% endif %}
+{% block content %}
+<h1>Welcome to the Funny Email Generator!</h1>
+<p>Create and manage your temporary funny emails.</p>
 {% endblock %}
