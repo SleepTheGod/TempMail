@@ -93,25 +93,27 @@ def user_dashboard():
         db.session.commit()
         
         # Send verification email
-        msg = Message('Verify Your Temporary Email', sender='your_email@gmail.com', recipients=[email_address])
+        msg = Message('Verify Your Temporary Email', sender=app.config['MAIL_USERNAME'], recipients=[email_address])
         msg.body = f'Your temporary email is: {email_address}\n\nPlease check for incoming messages!'
         mail.send(msg)
 
+        flash(f'Generated temporary email: {email_address}. A verification email has been sent.', 'success')
         return redirect(url_for('inbox', email=email_address))
     return render_template('user_dashboard.html')
 
 @app.route('/inbox/<email>')
 @login_required
 def inbox(email):
-    messages = Email.query.filter_by(address=email).first()
-    if messages:
+    email_record = Email.query.filter_by(address=email).first()
+    if email_record:
         # Remove old messages (older than 1 hour)
-        if datetime.utcnow() - messages.created_at > timedelta(hours=1):
-            db.session.delete(messages)
+        if datetime.utcnow() - email_record.created_at > timedelta(hours=1):
+            db.session.delete(email_record)
             db.session.commit()
             flash('Your temporary email has expired and been deleted.', 'info')
             return redirect(url_for('user_dashboard'))
-    return render_template('inbox.html', email=email, messages=messages)
+
+    return render_template('inbox.html', email=email, messages=email_record)
 
 @app.route('/send_message/<email>', methods=['POST'])
 @login_required
@@ -119,14 +121,21 @@ def send_message(email):
     message_content = request.form.get('message')
     email_record = Email.query.filter_by(address=email).first()
     if email_record:
-        email_record.messages += f"{message_content}\n"
+        if email_record.messages:
+            email_record.messages += f"\n{message_content}"
+        else:
+            email_record.messages = message_content
         db.session.commit()
+        flash('Message sent successfully!', 'success')
+    else:
+        flash('Email not found!', 'danger')
     return redirect(url_for('inbox', email=email))
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
+    flash('You have been logged out.', 'success')
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
